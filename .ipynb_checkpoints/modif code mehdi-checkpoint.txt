@@ -1,0 +1,2 @@
+base_model_pred.py : on utilise cuda ligne 12 sans vérifier si il est available (on vérifie plus bas seulement, l 45)
+probleme : quand on utilise python au lieu du notebook passer par le gpu arrete le processus 'Processus arreté'

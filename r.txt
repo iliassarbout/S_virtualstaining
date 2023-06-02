@@ -1,0 +1,9 @@
+requests
+requests-toolbelt 
+cachecontrol
+six
+future
+shapely
+numpy
+opencv-python-headless
+--extra-index-url=https://packagecloud.io/cytomine-uliege/Cytomine-python-client/pypi/simple cytomine-python-client

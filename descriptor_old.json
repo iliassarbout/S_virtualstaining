@@ -1,0 +1,50 @@
+{
+    "name": "VirtualStaining",
+    "description": "This Cytomine App is a first test.",
+    "schema-version": "cytomine-0.1",
+    "inputs": [
+        {
+            "id": "image_id",
+            "name": "image_id",
+            "description": "This is the id of image we want to process",
+            "type": "Number",
+            "optional": false,
+            "default-value": 142507
+        },
+        {
+            "id": "cytomine_host",
+            "name": "Cytomine host",
+            "set-by-server": true,
+            "optional": false,
+            "type": "String"
+        },
+        {
+            "id": "cytomine_public_key",
+            "name": "Cytomine public key",
+            "set-by-server": true,
+            "optional": false,
+            "type": "String"
+        },
+        {
+            "id": "cytomine_private_key",
+            "name": "Cytomine private key",
+            "set-by-server": true,
+            "optional": false,
+            "type": "String"
+        },
+        {
+            "id": "cytomine_id_project",
+            "name": "Cytomine project ID",
+            "set-by-server": true,
+            "optional": false,
+            "type": "Number"
+        },
+        {
+            "id": "cytomine_id_software",
+            "name": "Cytomine software ID",
+            "set-by-server": true,
+            "optional": false,
+            "type": "Number"
+        }
+    ]
+}

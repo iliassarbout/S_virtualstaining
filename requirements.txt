@@ -1,0 +1,14 @@
+openslide-python
+torch==1.7.0
+torchvision
+scipy
+scikit-learn
+scikit-image
+imantics
+pyvips
+matplotlib	
+Pillow
+natsort
+pandas
+tqdm
+cytomine-python-client

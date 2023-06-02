@@ -1,0 +1,68 @@
+{
+    "name": "virtualstaining",
+    "description": "This Cytomine App is a first test.",
+    "schema-version": "cytomine-0.1",
+    "command-line": "python app.py --cytomine_host [CYTOMINE_HOST] --cytomine_public_key [CYTOMINE_PUBLIC_KEY] --cytomine_private_key [CYTOMINE_PRIVATE_KEY] --cytomine_id_project [CYTOMINE_ID_PROJECT] --cytomine_id_software [CYTOMINE_ID_SOFTWARE] --image_id [IMAGE_ID]",
+    "container-image": {
+    "type": "singularity",
+    "image": "cytomine/s_virtualstaining"
+    },
+    
+    "inputs": [
+        {
+            "id": "image_id",
+            "name": "image_id",
+            "description": "This is the id of image we want to process",
+            "type": "Number",
+            "optional": false,
+            "default-value": 142507,
+            "value-key": "[@ID]",
+            "command-line-flag": "--@id"
+        },
+        {
+            "id": "cytomine_host",
+            "name": "Cytomine host",
+            "set-by-server": true,
+            "optional": false,
+            "type": "String",
+            "value-key": "[@ID]",
+            "command-line-flag": "--@id"
+        },
+        {
+            "id": "cytomine_public_key",
+            "name": "Cytomine public key",
+            "set-by-server": true,
+            "optional": false,
+            "type": "String",
+            "value-key": "[@ID]",
+            "command-line-flag": "--@id"
+        },
+        {
+            "id": "cytomine_private_key",
+            "name": "Cytomine private key",
+            "set-by-server": true,
+            "optional": false,
+            "type": "String",
+            "value-key": "[@ID]",
+            "command-line-flag": "--@id"
+        },
+        {
+            "id": "cytomine_id_project",
+            "name": "Cytomine project ID",
+            "set-by-server": true,
+            "optional": false,
+            "type": "Number",
+            "value-key": "[@ID]",
+            "command-line-flag": "--@id"
+        },
+        {
+            "id": "cytomine_id_software",
+            "name": "Cytomine software ID",
+            "set-by-server": true,
+            "optional": false,
+            "type": "Number",
+            "value-key": "[@ID]",
+            "command-line-flag": "--@id"
+        }
+    ]
+}
