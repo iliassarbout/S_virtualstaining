@@ -1,8 +1,7 @@
 {
     "name": "virtualstaining",
     "description": "This Cytomine App is a first test.",
-    "schema-version": "cytomine-0.1",
-    "command-line": "python app.py [CYTOMINE_HOST] [CYTOMINE_PUBLIC_KEY] [CYTOMINE_PRIVATE_KEY] [CYTOMINE_ID_PROJECT] [CYTOMINE_ID_SOFTWARE] [IMAGE_ID]",
+    "command-line": "python app.py --cytomine_host [CYTOMINE_HOST] --cytomine_public_key [CYTOMINE_PUBLIC_KEY] --cytomine_private_key [CYTOMINE_PRIVATE_KEY] --cytomine_id_project [CYTOMINE_ID_PROJECT] --cytomine_id_software [CYTOMINE_ID_SOFTWARE] --image_id [IMAGE_ID]",
     "container-image": {
     "type": "singularity",
     "image": "wilspear/s_virtualstaining"
@@ -12,12 +11,15 @@
         {
             "id": "image_id",
             "name": "image_id",
-            "description": "This is the id of image we want to process",
-            "type": "Number",
+            "description": "This is image we want to process",
             "optional": false,
-            "default-value": 142507,
+            "default-value": 1401,
             "value-key": "[@ID]",
-            "command-line-flag": "--@id"
+            "command-line-flag": "--@id",
+    	    "type": "Domain",
+    	    "uri": "/api/project/$currentProject$/imageinstance.json",
+    	    "uri-print-attribute": "instanceFilename",
+    	    "uri-sort-attribute": "instanceFilename"
         },
         {
             "id": "cytomine_host",
@@ -64,5 +66,6 @@
             "value-key": "[@ID]",
             "command-line-flag": "--@id"
         }
-    ]
+    ],
+    "schema-version": "cytomine-0.1"
 }
