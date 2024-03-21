@@ -11,8 +11,8 @@ class ComboGANModel(BaseModel):
     def name(self):
         return 'ComboGANModel'
 
-    def __init__(self, which_epoch, save_dir,gpu_ids=[0]):
-        super(ComboGANModel, self).__init__(gpu_ids=gpu_ids)
+    def __init__(self, which_epoch, save_dir):
+        super(ComboGANModel, self).__init__()
 
         self.isTrain = False
         self.n_domains = 9
@@ -25,7 +25,7 @@ class ComboGANModel(BaseModel):
         # load/define networks
         self.netG = networks.define_G(3, 3, 64,
                                       9, 0,
-                                      9, 'instance',False, gpu_ids)
+                                      9, 'instance',False, [0])
         if self.isTrain:
             blur_fn = lambda x : torch.nn.functional.conv2d(x, self.Tensor(util.gkern_2d()), groups=3, padding=2)
             self.netD = networks.define_D(3, 64, 4,

@@ -6,10 +6,10 @@ class BaseModel():
     def name(self):
         return 'BaseModel'
 
-    def __init__(self,gpu_ids = [0]):
-        self.gpu_ids = gpu_ids
+    def __init__(self,):
+        self.gpu_ids = [0]
         self.isTrain = False
-        self.Tensor = torch.cuda.FloatTensor if (self.gpu_ids and torch.cuda.is_available()) else torch.Tensor
+        self.Tensor = torch.cuda.FloatTensor if self.gpu_ids else torch.Tensor
         # self.save_dir = save_dir #os.path.join('./checkpoints', 'stain_aligned_comGan-512')
 
     def set_input(self, input):

@@ -5,24 +5,23 @@ WORKDIR /app
 
 RUN apt-get update 
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get install -y \
     python3-openslide \
     libjpeg-dev \
     zlib1g-dev \
     libvips \
     libvips-tools \
-    gcc \
-    ffmpeg \
-    libsm6 \
-    libxext6
+    gcc
     
+
+
 COPY . /app
 
 RUN curl -s https://packagecloud.io/install/repositories/cytomine-uliege/Cytomine-python-client/script.python.sh | bash
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install --upgrade pip
-RUN pip install torch==1.13.1+cpu torchvision==0.14.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
-RUN pip install -r requirements.txt
+RUN pip install torch==1.7.0+cpu torchvision==0.8.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip install -r requirements_2.txt
 
 
 ENTRYPOINT ["python","/app/app.py"]

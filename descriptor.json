@@ -1,8 +1,7 @@
 {
     "name": "virtualstaining",
     "description": "This Cytomine App is a first test.",
-    "schema-version": "cytomine-0.1",
-    "command-line": "[CYTOMINE_HOST] [CYTOMINE_PUBLIC_KEY] [CYTOMINE_PRIVATE_KEY] [CYTOMINE_ID_PROJECT] [CYTOMINE_ID_SOFTWARE] [IMAGE_ID]",
+    "command-line": "python app.py --cytomine_host [CYTOMINE_HOST] --cytomine_public_key [CYTOMINE_PUBLIC_KEY] --cytomine_private_key [CYTOMINE_PRIVATE_KEY] --cytomine_id_project [CYTOMINE_ID_PROJECT] --cytomine_id_software [CYTOMINE_ID_SOFTWARE] --image_id [IMAGE_ID]",
     "container-image": {
     "type": "singularity",
     "image": "wilspear/s_virtualstaining"
@@ -67,5 +66,6 @@
             "value-key": "[@ID]",
             "command-line-flag": "--@id"
         }
-    ]
+    ],
+    "schema-version": "cytomine-0.1"
 }

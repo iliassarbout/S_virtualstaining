@@ -1,0 +1,1 @@
+python app.py --cytomine_host http://localhost-core --cytomine_public_key 29a4bc15-74af-4512-89ce-1be341e381aa --cytomine_private_key cb106984-47cd-4fed-85f0-7031739c713e --cytomine_id_project 1364 --software_id 15 --image_id 2648

@@ -1,8 +1,8 @@
 from scipy.ndimage import binary_fill_holes, binary_dilation, binary_erosion
 from skimage.measure import label, regionprops
-import torchvision.transforms as transforms
 from models.combogan_model_pred import ComboGANModel
 import torch
+import torchvision.transforms as transforms
 from imantics import Polygons, Mask, BBox
 from matplotlib.patches import Rectangle
 from sklearn.cluster import KMeans
@@ -22,21 +22,27 @@ import os
 import pyvips
 import shutil
 from utils import *
+from cytomine.models import Job
 
 
 
-def extraction(he_slide_path='IMAGE.ndpi',real_wsi_id='default',gpu_ids = [0],patch_size = 2048,slide_dim_lvl = 5):
-
+def extraction(he_slide_path=os.path.join(os.getcwd(),'IMAGE.ndpi'),real_wsi_id='default',gpu_ids = [0],patch_size = 2048,slide_dim_lvl = 5,path_app='/app',cj=None,original_image_name=None):
+    #os.chdir(cwd)
+    print('path in extraction utils')
+    print(os.getcwd())
     # Path to all HE slides version 'HE+CD8'
     # Path to save data
-    path_to_save_patches = os.path.join('sample_staining', 'he_patches', real_wsi_id)
-    os.makedirs(path_to_save_patches ,exist_ok=True)
+    path_to_save_patches = os.path.join(os.getcwd(),'sample_staining', 'he_patches', real_wsi_id)
+    print(path_to_save_patches)
+    if os.path.exists(path_to_save_patches):
+        shutil.rmtree(path_to_save_patches)
+    os.makedirs(path_to_save_patches ,mode=0o777, exist_ok=True)
 
     # Path to save data
-    save_WSIs = os.path.join('sample_staining', 'slides', real_wsi_id)
+    save_WSIs = os.path.join(os.getcwd(),'sample_staining', 'slides', real_wsi_id)
     os.makedirs(save_WSIs ,exist_ok=True)
 
-    os.makedirs(os.path.join('sample_staining', 'GAN', real_wsi_id) ,exist_ok=True) 
+    os.makedirs(os.path.join(os.getcwd(),'sample_staining', 'GAN', real_wsi_id) ,exist_ok=True) 
 
     # Opening the slides
     he_slide  = OpenSlide(he_slide_path)
@@ -55,7 +61,7 @@ def extraction(he_slide_path='IMAGE.ndpi',real_wsi_id='default',gpu_ids = [0],pa
 
     clean_label_image, polygons = cluster_wsi(he_thm, plot=False)
 
-
+    cj.job.update(status=Job.RUNNING, progress=10, statusComment="Extracting image patches...")
     for poly_id in range(len(polygons.points)):
         tmp_bn_img = np.zeros(np.shape(clean_label_image))
         rr, cc = np.where(clean_label_image==int(len(polygons.points)-poly_id))
@@ -80,7 +86,11 @@ def extraction(he_slide_path='IMAGE.ndpi',real_wsi_id='default',gpu_ids = [0],pa
                     # print(x_id-1,y_id-1)
 
 
-    model = ComboGANModel(which_epoch=885, save_dir=os.path.join('./checkpoints', 'stain_aligned_comGan-512'),gpu_ids = gpu_ids)
+    try:
+        model = ComboGANModel(which_epoch=885, save_dir=os.path.join(path_app,'checkpoints', 'stain_aligned_comGan-512'),gpu_ids = gpu_ids)
+    except:
+        print('Test run outside from cytomine.')
+        model = ComboGANModel(which_epoch=885, save_dir='checkpoints/stain_aligned_comGan-512/',gpu_ids = gpu_ids)
 
     def get_transform():
         transform_list = []
@@ -95,7 +105,11 @@ def extraction(he_slide_path='IMAGE.ndpi',real_wsi_id='default',gpu_ids = [0],pa
     path_tiles = natsorted(glob(os.path.join(path_to_save_patches, '*.tif')))
 
     transform = get_transform()
+    n_patches = len(path_tiles)
+    k=1
     for path in path_tiles:
+        progress = 15 + 60*k/n_patches
+        cj.job.update(status=Job.RUNNING, progress=int(progress), statusComment="Encoding patch " + str(k))
         he_img = Image.open(path).convert('RGB')
 
         he_img = transform(he_img)
@@ -111,16 +125,18 @@ def extraction(he_slide_path='IMAGE.ndpi',real_wsi_id='default',gpu_ids = [0],pa
 
         for label, image_numpy in visuals.items():
             image_name = '%s_%s.tif' % (name, label)
-            save_path = os.path.join('sample_staining', 'GAN', real_wsi_id,image_name)
+            save_path = os.path.join(os.getcwd(),'sample_staining', 'GAN', real_wsi_id,image_name)
             Image.fromarray(image_numpy).save(save_path)
 
-
+        k+=1
 
     for stain_id_fake in trange(0, 9):
-
+        
+        progress = int(75 + 20*(stain_id_fake+1)/10)
+        cj.job.update(status=Job.RUNNING, progress=progress, statusComment="Generating stain " + str(stain_id_fake+1))
 
         # Get tiles paths
-        path_tiles = natsorted(glob(os.path.join('sample_staining', 'GAN', real_wsi_id, '*'+str(stain_id_fake)+'.tif')))
+        path_tiles = natsorted(glob(os.path.join(os.getcwd(),'sample_staining', 'GAN', real_wsi_id, '*'+str(stain_id_fake)+'.tif')))
 
         # Getting the x rows and y columns
         _, patch_size, x_rows, y_colms, stain, modality =os.path.splitext(os.path.basename(path_tiles[len(path_tiles)-1]))[0].split('_')
@@ -135,7 +151,7 @@ def extraction(he_slide_path='IMAGE.ndpi',real_wsi_id='default',gpu_ids = [0],pa
 
 
         all_slide = np.ones((np.max(y_mins)-np.min(y_mins)+int(patch_size), np.max(x_mins)-np.min(x_mins)+int(patch_size), 3))*255
-
+        
         for path in path_tiles:
             # Getting the x rows and y columns
             _, patch_size, x_min, y_min, stain, modality =os.path.splitext(os.path.basename(path))[0].split('_')
@@ -175,22 +191,23 @@ def extraction(he_slide_path='IMAGE.ndpi',real_wsi_id='default',gpu_ids = [0],pa
         # pyramid.set_type(pyvips.GValue.gstr_type,    "tiff.Make", "Hamamatsu")
         # pyramid.set_type(pyvips.GValue.gint_type, "hamamatsu.SourceLens",40)
 
-        pyramid.tiffsave(os.path.join(save_WSIs, 'WSI_'+stain+'_'+modality+'.tif'), 
+        pyramid.tiffsave(os.path.join(os.getcwd(),save_WSIs, original_image_name + '_WSI_'+stain+'_'+modality+'.tif'), 
                     compression="jpeg", 
                     Q=100, 
                     tile=True, 
-                    tile_width=512, 
-                    tile_height=512, 
+                    tile_width=256, 
+                    tile_height=256, #Modif for display to work well 
                     pyramid=True)
 
 
         del pyramid
 
 
+    cj.job.update(status=Job.RUNNING, progress=98, statusComment="Deleting individual patches and other temporary files... ")
 
     try:
         shutil.rmtree(path_to_save_patches)
-        shutil.rmtree(os.path.join('sample_staining', 'GAN', real_wsi_id))
+        shutil.rmtree(os.path.join(os.getcwd(),'sample_staining', 'GAN', real_wsi_id))
         print("Temp folders has been deleted.")
     except OSError as e:
         print(f"Error: {e.strerror}")
